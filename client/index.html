@@ -13,6 +13,7 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(client) app/vendor.css -->
       <!-- bower:css -->
+      <link rel="stylesheet" href="bower_components/spectrum/spectrum.css" />
       <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css({.tmp,client}) app/app.css -->
@@ -26,8 +27,30 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <!-- Add your site or application content here -->
+    <!-- Add your site or application content here 
+<div class="container">
     <div ui-view=""></div>
+</div>
+-->
+
+	<!-- Add your site or application content here -->
+	<div class="container">
+	    <div class="header"  ng-controller="HeaderCtrl">
+		<ul class="nav nav-pills pull-right">
+		    <li ng-class="{ active: isActive('/')}"><a ng-href="/">Home</a></li>
+		    <li ng-class="{ active: isActive('/colorize')}"><a ng-href="/colorize">Colorize</a></li>
+		    <li ng-class="{ active: isActive('/about')}"><a ng-href="/about">About</a></li>
+		</ul>
+		<a id="logo_link" href="/"><img src="/assets/images/logo1.png" width="100" height="52"/></a>
+		<h3 class="text-muted">ColorAyz</h3>
+	    </div>
+
+	    <div ui-view=""></div>
+
+	    <div class="footer">
+		<p>ColorAyz by Asaf David, 2014</p>
+	    </div>
+	</div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
     <script>
@@ -46,12 +69,34 @@
     <![endif]-->
     <!-- build:js({client,node_modules}) app/vendor.js -->
       <!-- bower:js -->
+      <script src="bower_components/jquery/dist/jquery.js"></script>
+      <script src="bower_components/angular/angular.js"></script>
+      <script src="bower_components/angular-resource/angular-resource.js"></script>
+      <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+      <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+      <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+      <script src="bower_components/lodash/dist/lodash.compat.js"></script>
+      <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+      <script src="bower_components/spectrum/spectrum.js"></script>
+      <script src="bower_components/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.js"></script>
+      <script src="bower_components/spin.js/spin.js"></script>
+      <script src="bower_components/angular-spinner/angular-spinner.js"></script>
       <!-- endbower -->
     <!-- endbuild -->
 
         <!-- build:js({.tmp,client}) app/app.js -->
         <script src="app/app.js"></script>
           <!-- injector:js -->
+          <script src="app/about/about.controller.js"></script>
+          <script src="app/about/about.js"></script>
+          <script src="app/colorize/colorize.controller.js"></script>
+          <script src="app/colorize/colorize.js"></script>
+          <script src="app/core_script/colorayz.js"></script>
+          <script src="app/main/main.controller.js"></script>
+          <script src="app/main/main.js"></script>
+          <script src="components/header/header.js"></script>
+          <script src="components/modal/modal.service.js"></script>
+          <script src="components/navbar/navbar.controller.js"></script>
           <!-- endinjector -->
         <!-- endbuild -->
 </body>

@@ -1,0 +1,4 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<p>ColorAyz is a web-based implementation of the colorization algorithm described in <a href="http://www.cs.ucsb.edu/~mturk/Courses/MAT235-2014/Misc/papers/Colorization.pdf">
+    Fast image and video colorization using chrominance blending</a> <i class="fa fa-file-pdf-o"></i>.</p>

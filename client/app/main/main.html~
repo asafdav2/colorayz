@@ -29,7 +29,7 @@
         </div>
         <div class="col-lg-6">
             <p>3. Hit the colorize button and watch the magic unfolds!</p>
-            <a class="btn btn-primary btn-lg" href="/colorize">Try it yourself!</a>
+            <a class="btn btn-primary btn-lg" href="#/colorize">Try it yourself!</a>
         </div>
     </div>
 </div>

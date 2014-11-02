@@ -14,7 +14,12 @@
     "angular-bootstrap": "~0.11.0",
     "font-awesome": ">=4.1.0",
     "lodash": "~2.4.1",
-    "angular-ui-router": "~0.2.10"
+    "angular-ui-router": "~0.2.10",
+    "spectrum": "~1.5.0",
+    "angular-spectrum-colorpicker": "~1.2.0",
+    "font-awesome": "*",
+    "spin.js": "*",
+    "angular-spinner": "*"
   },
   "devDependencies": {
     "angular-mocks": ">=1.2.*",

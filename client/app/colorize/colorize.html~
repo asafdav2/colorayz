@@ -1,0 +1,61 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="row" xmlns="http://www.w3.org/1999/html">
+    <div class="btn-group pull-right">
+    <span class="btn btn-default btn-file">
+        <i class="fa fa-folder-open"></i> Load <input type="file" id="imageLoader" ng-model="photo"
+                                                      onchange="angular.element(this).scope().fileChanged(this)"
+                                                      accept="image/*"/>
+    </span>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-picture-o "></i> From samples <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a ng-click="load('images/samples/rose.png')"><img src="images/samples/rose_thumbnail.png"></a></li>
+                <li><a ng-click="load('images/samples/baby.png')"><img src="images/samples/baby_thumbnail.png"></a></li>
+                <li><a ng-click="load('images/samples/bird.png')"><img src="images/samples/bird_thumbnail.png"></a></li>
+                <li><a ng-click="load('images/samples/logo.png')"><img src="images/samples/logo_thumbnail.png"></a></li>
+            </ul>
+        </div>
+        <button type="button" class="btn btn-default" id="colorPicker"><i class="fa fa-circle"
+                                                                          ng-style="{color: brushColor}"></i> Color
+        </button>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-paint-brush"></i> Tool <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a ng-click="choosePencil()"><i class="fa fa-pencil"></i> Pencil</a></li>
+                <li class="divider"></li>
+                <li><a ng-click="chooseEraser()"><i class="fa fa-eraser"></i> Eraser</a></li>
+            </ul>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-arrows-h"></i> Width <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a>
+                    <slider ng-model="brushWidth" min="{{brushWidthOptions.min}}" step="{{brushWidthOptions.step}}"
+                            max="{{brushWidthOptions.max}}" value="{{brushWidthOptions.value}}"/>
+                </a></li>
+            </ul>
+        </div>
+        <button type="button" class="btn btn-default" ng-click="clear()"><i class="fa fa-trash-o"></i> Clear</button>
+        <button type="button" class="btn btn-primary" ng-click="colorize()"><img src="favicon.png" height="16"
+                                                                                 width="16"></i> Colorize
+        </button>
+    </div>
+</div>
+<hr/>
+
+<div id="srcCanvasRow" class="row">
+    <canvas id="backCanvas" width="0" height="0"></canvas>
+    <canvas id="srcCanvas" width="0" height="0"></canvas>
+    <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="colorization-spinner"></span>
+</div>
+
+<div class="row">
+    <canvas id="dstCanvas" width="0" height="0"/>
+</div>
