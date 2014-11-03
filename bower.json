@@ -17,7 +17,8 @@
     "angular-ui-router": "~0.2.10",
     "spectrum": "~1.5.0",
     "angular-spectrum-colorpicker": "~1.2.0",
-    "font-awesome": "*",
+    "seiyria-bootstrap-slider": "*",
+    "angular-bootstrap-slider": "*",
     "spin.js": "*",
     "angular-spinner": "*"
   },

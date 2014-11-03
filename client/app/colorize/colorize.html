@@ -10,10 +10,11 @@
                 <i class="fa fa-picture-o "></i> From samples <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li><a ng-click="load('images/samples/rose.png')"><img src="images/samples/rose_thumbnail.png"></a></li>
-                <li><a ng-click="load('images/samples/baby.png')"><img src="images/samples/baby_thumbnail.png"></a></li>
-                <li><a ng-click="load('images/samples/bird.png')"><img src="images/samples/bird_thumbnail.png"></a></li>
-                <li><a ng-click="load('images/samples/logo.png')"><img src="images/samples/logo_thumbnail.png"></a></li>
+                <li ng-repeat="sample in samples">
+                    <a ng-click="load('assets/images/samples/' + sample + '.png')">
+                        <img ng-src="assets/images/samples/{{sample}}_thumbnail.png">
+                    </a>
+                </li>
             </ul>
         </div>
         <button type="button" class="btn btn-default" id="colorPicker"><i class="fa fa-circle"
@@ -34,10 +35,9 @@
                 <i class="fa fa-arrows-h"></i> Width <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li><a>
-                    <slider ng-model="brushWidth" min="{{brushWidthOptions.min}}" step="{{brushWidthOptions.step}}"
+                <li id="sliderItem"><slider ng-model="brushWidth" min="{{brushWidthOptions.min}}" step="{{brushWidthOptions.step}}"
                             max="{{brushWidthOptions.max}}" value="{{brushWidthOptions.value}}"/>
-                </a></li>
+                </li>
             </ul>
         </div>
         <button type="button" class="btn btn-default" ng-click="clear()"><i class="fa fa-trash-o"></i> Clear</button>

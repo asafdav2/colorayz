@@ -7,7 +7,7 @@ angular.module('colorayzApp', [
   'ui.router',
   'ui.bootstrap',
   'angularSpectrumColorpicker',
-  //'ui.bootstrap-slider',
+  'ui.bootstrap-slider',
   'angularSpinner'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {

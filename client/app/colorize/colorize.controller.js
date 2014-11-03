@@ -4,7 +4,10 @@
 
 angular.module('colorayzApp')
   .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', function ($scope, usSpinnerService) {
-   $scope.startSpin = function () {
+
+        $scope.samples = ['rose', 'baby', 'bird'];
+
+        $scope.startSpin = function () {
             usSpinnerService.spin('colorization-spinner');
         };
 
@@ -35,7 +38,8 @@ angular.module('colorayzApp')
         $scope.brushWidthOptions = {
             min: 1,
             max: 10,
-            step: 1
+            step: 1,
+            tooltip: 'always'
         };
 
         $scope.srcCanvas = $('#srcCanvas')[0];

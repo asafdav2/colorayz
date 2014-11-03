@@ -44,3 +44,11 @@ p .fa {
 .dropdown-menu li a img {
   cursor: pointer;
 }
+
+.dropdown-menu #sliderItem {
+  padding: 3px 20px;
+  display: block;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857;
+}
