@@ -285,7 +285,11 @@ angular.module('colorayzApp')
 
         angular.element('#colorPicker').spectrum({
             showInput: true,
+            showInitial: true,
             preferredFormat: 'rgb',
+            showPalette: true,
+            palette: [ ],
+            showSelectionPalette: true,
             change: $scope.colorChange
         });
 

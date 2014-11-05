@@ -1,12 +1,12 @@
 <div class="row" xmlns="http://www.w3.org/1999/html">
     <div class="btn-group pull-right">
-    <span class="btn btn-default btn-file">
+    <span class="btn btn-default btn-file" title="Upload local image">
         <i class="fa fa-folder-open"></i> Load <input type="file" id="imageLoader" ng-model="photo"
                                                       onchange="angular.element(this).scope().fileChanged(this)"
                                                       accept="image/*"/>
     </span>
         <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Choose image from samples">
                 <i class="fa fa-picture-o "></i> From samples <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
@@ -17,21 +17,21 @@
                 </li>
             </ul>
         </div>
-        <button type="button" class="btn btn-default" id="colorPicker"><i class="fa fa-circle"
+        <button type="button" class="btn btn-default" id="colorPicker" title="Choose brush color"><i class="fa fa-circle"
                                                                           ng-style="{color: brushColor}"></i> Color
         </button>
         <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Choose tool">
                 <i class="fa fa-paint-brush"></i> Tool <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li ng-class="{active: tool === 'pencil'}"><a ng-click="selectTool('pencil')"><i class="fa fa-pencil"></i> Pencil</a></li>
-                <li ng-class="{active: tool === 'color_picker'}"><a ng-click="selectTool('color_picker')"><i class="fa fa-eyedropper"></i> Color Picker</a></li>
-                <li ng-class="{active: tool === 'eraser'}"><a ng-click="selectTool('eraser')"><i class="fa fa-eraser"></i> Eraser</a></li>
+                <li ng-class="{active: tool === 'pencil'}"><a ng-click="selectTool('pencil')" title="Pencil"><i class="fa fa-pencil"></i> Pencil</a></li>
+                <li ng-class="{active: tool === 'color_picker'}"><a ng-click="selectTool('color_picker')" title="Color Picker"><i class="fa fa-eyedropper"></i> Color Picker</a></li>
+                <li ng-class="{active: tool === 'eraser'}"><a ng-click="selectTool('eraser')" title="Eraser"><i class="fa fa-eraser"></i> Eraser</a></li>
             </ul>
         </div>
         <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="Set brush width">
                 <i class="fa fa-arrows-h"></i> Width <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
@@ -40,10 +40,10 @@
                 </li>
             </ul>
         </div>
-        <button type="button" class="btn btn-default" ng-click="clear()"><i class="fa fa-trash-o"></i> Clear</button>
-        <button type="button" class="btn btn-default" ng-click="undo()"><i class="fa fa-rotate-left"></i></button>
-        <button type="button" class="btn btn-default" ng-click="redo()"><i class="fa fa-rotate-right"></i></button>
-        <button type="button" class="btn btn-primary" ng-click="colorize()"><img src="favicon.png" height="16"
+        <button type="button" class="btn btn-default" ng-click="undo()" title="Undo"><i class="fa fa-reply"></i></button>
+        <button type="button" class="btn btn-default" ng-click="redo()" title="Redo"><i class="fa fa-share"></i></button>
+        <button type="button" class="btn btn-default" ng-click="clear()" title="Clear all scribbles"><i class="fa fa-trash-o"></i> Clear</button>
+        <button type="button" class="btn btn-primary" ng-click="colorize()" title="Colorize"><img src="favicon.png" height="16"
                                                                                  width="16"></i> Colorize
         </button>
     </div>
