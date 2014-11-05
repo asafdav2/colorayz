@@ -25,9 +25,9 @@
                 <i class="fa fa-paint-brush"></i> Tool <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li><a ng-click="selectTool('pencil')"><i class="fa fa-pencil"></i> Pencil</a></li>
-                <li class="divider"></li>
-                <li><a ng-click="selectTool('eraser')"><i class="fa fa-eraser"></i> Eraser</a></li>
+                <li ng-class="{active: tool === 'pencil'}"><a ng-click="selectTool('pencil')"><i class="fa fa-pencil"></i> Pencil</a></li>
+                <li ng-class="{active: tool === 'color_picker'}"><a ng-click="selectTool('color_picker')"><i class="fa fa-eyedropper"></i> Color Picker</a></li>
+                <li ng-class="{active: tool === 'eraser'}"><a ng-click="selectTool('eraser')"><i class="fa fa-eraser"></i> Eraser</a></li>
             </ul>
         </div>
         <div class="btn-group">

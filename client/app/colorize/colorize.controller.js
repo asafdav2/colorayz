@@ -23,6 +23,15 @@ angular.module('colorayzApp')
             makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
         }
 
+        function getSrcColorAt(x, y) {
+            var data = $scope.srcCanvas.getContext('2d').getImageData(0, 0, $scope.width, $scope.height).data;
+            var id = 4 * (y * $scope.width + x);
+            var r = data[id];
+            var g = data[id + 1];
+            var b = data[id + 2];
+            return [r,  g,  b];
+        }
+
         function relMouseCoords(event) {
             var totalOffsetX = 0;
             var totalOffsetY = 0;
@@ -39,6 +48,15 @@ angular.module('colorayzApp')
                 x: event.pageX - totalOffsetX,
                 y: event.pageY - totalOffsetY
             };
+        }
+
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+
+        function rgbToHex(rgb) {
+            return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
         }
 
         HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
@@ -103,6 +121,12 @@ angular.module('colorayzApp')
             switch (res) {
                 case 'down':
                     return function (e) {
+                        if ($scope.tool === 'color_picker') {
+                            var coords = $scope.srcCanvas.relMouseCoords(e);
+                            $scope.brushColor = rgbToHex(getSrcColorAt(coords.x, coords.y));
+                            $scope.$apply();
+                            return;
+                        }
                         isDrawing = true;
                         updateLocation(e);
                         ctx.beginPath();
@@ -265,6 +289,11 @@ angular.module('colorayzApp')
         });
 
         function makeCursor(tool, color, width) {
+
+            if (tool === 'color_picker') {
+                $scope.srcCanvas.style.cursor = 'url(assets/images/eyedropper_16.png) 0 18, auto';
+                return;
+            }
 
             var cursor = document.createElement('canvas'),
                 ctx = cursor.getContext('2d');
