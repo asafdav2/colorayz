@@ -2,8 +2,12 @@
 /* global confirm */
 'use strict';
 
+
 angular.module('colorayzApp')
   .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', function ($scope, usSpinnerService) {
+
+        var cursorSize = 16;
+        var cursorHalfSize = cursorSize / 2;
 
         $scope.samples = ['rose', 'baby', 'bird'];
 
@@ -14,6 +18,10 @@ angular.module('colorayzApp')
         $scope.stopSpin = function () {
             usSpinnerService.stop('colorization-spinner');
         };
+
+        function updateCursor() {
+            makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
+        }
 
         function relMouseCoords(event) {
             var totalOffsetX = 0;
@@ -42,12 +50,18 @@ angular.module('colorayzApp')
             tooltip: 'always'
         };
 
+        $scope.$watch('brushWidth', function() {
+            updateCursor();
+        });
+
         $scope.srcCanvas = $('#srcCanvas')[0];
         $scope.dstCanvas = $('#dstCanvas')[0];
         $scope.backCanvas = $('#backCanvas')[0];
 
+        $scope.tool = 'pencil';
         $scope.brushColor = '#CC0A0A';
         $scope.brushWidth = 3;
+        updateCursor();
 
         function getCanvasContext(canvas) {
             return canvas.getContext('2d');
@@ -191,18 +205,23 @@ angular.module('colorayzApp')
 
         $scope.colorChange = function (color) {
             $scope.brushColor = color.toHexString();
+            updateCursor();
             $scope.$apply();
         };
 
         $scope.choosePencil = function () {
+            $scope.tool = 'pencil';
             ctx.globalCompositeOperation = $scope.prevGlobalCompositeOperation;
             ctx.strokeStyle = $scope.brushColor;
+            updateCursor();
         };
 
         $scope.chooseEraser = function () {
+            $scope.tool = 'eraser';
             $scope.prevGlobalCompositeOperation = ctx.globalCompositeOperation;
             ctx.globalCompositeOperation = 'destination-out';
             ctx.strokeStyle = 'rgba(0,0,0,1.0)';
+            updateCursor();
         };
 
         $scope.choosePicker = function () {
@@ -245,5 +264,33 @@ angular.module('colorayzApp')
             preferredFormat: 'rgb',
             change: $scope.colorChange
         });
+
+        function makeCursor(tool, color, width) {
+
+            var cursor = document.createElement('canvas'),
+                ctx = cursor.getContext('2d');
+
+            cursor.width = cursorSize;
+            cursor.height = cursorSize;
+
+            ctx.strokeStyle = color;
+
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+
+            var radius = width / 2;
+
+            ctx.beginPath();
+            ctx.arc(cursorHalfSize, cursorHalfSize, radius, 0, 2 * Math.PI, false);
+            if (tool === 'pencil') {
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+
+            $scope.srcCanvas.style.cursor = 'url(' + cursor.toDataURL() + ') ' + cursorHalfSize + ' ' + cursorHalfSize + ', auto';
+        }
 
   }]);
