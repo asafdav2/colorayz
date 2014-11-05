@@ -209,23 +209,23 @@ angular.module('colorayzApp')
             $scope.$apply();
         };
 
-        $scope.choosePencil = function () {
-            $scope.tool = 'pencil';
-            ctx.globalCompositeOperation = $scope.prevGlobalCompositeOperation;
-            ctx.strokeStyle = $scope.brushColor;
+        $scope.selectTool = function (tool) {
+            if (tool === $scope.tool) {
+                return;
+            }
+            $scope.tool = tool;
+            switch (tool) {
+                case 'pencil':
+                    ctx.globalCompositeOperation = $scope.prevGlobalCompositeOperation;
+                    ctx.strokeStyle = $scope.brushColor;
+                    break;
+                case 'eraser':
+                    $scope.prevGlobalCompositeOperation = ctx.globalCompositeOperation;
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.strokeStyle = 'rgba(0,0,0,1.0)';
+                    break;
+            }
             updateCursor();
-        };
-
-        $scope.chooseEraser = function () {
-            $scope.tool = 'eraser';
-            $scope.prevGlobalCompositeOperation = ctx.globalCompositeOperation;
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.strokeStyle = 'rgba(0,0,0,1.0)';
-            updateCursor();
-        };
-
-        $scope.choosePicker = function () {
-            $scope.tool = 'picker';
         };
 
         $scope.clear = function () {
@@ -235,7 +235,6 @@ angular.module('colorayzApp')
         };
 
         $scope.reset = function () {
-            //$scope.backCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
             $scope.backCanvas.width = $scope.backCanvas.width;
             $scope.srcCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
             $scope.dstCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
@@ -275,7 +274,7 @@ angular.module('colorayzApp')
 
             ctx.strokeStyle = color;
 
-            ctx.lineWidth = 4;
+            ctx.lineWidth = Math.min(4, width);
             ctx.lineCap = 'round';
 
             var radius = width / 2;
@@ -285,9 +284,11 @@ angular.module('colorayzApp')
             if (tool === 'pencil') {
                 ctx.fillStyle = color;
                 ctx.fill();
+            } else if (tool === 'eraser') {
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'black';
             }
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'black';
+
             ctx.stroke();
 
             $scope.srcCanvas.style.cursor = 'url(' + cursor.toDataURL() + ') ' + cursorHalfSize + ' ' + cursorHalfSize + ', auto';
