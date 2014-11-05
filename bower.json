@@ -19,11 +19,13 @@
     "angular-spectrum-colorpicker": "~1.2.0",
     "seiyria-bootstrap-slider": "*",
     "angular-bootstrap-slider": "*",
-    "spin.js": "*",
     "angular-spinner": "*"
   },
   "devDependencies": {
     "angular-mocks": ">=1.2.*",
     "angular-scenario": ">=1.2.*"
+  },
+  "resolutions": {
+    "angular": "1.3.1"
   }
 }
