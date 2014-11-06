@@ -12,10 +12,11 @@ if (typeof importScripts !== 'undefined') {
 
 var MAX_DISTANCE = 65535;
 var MAX_BLEND_COLORS = 3;
-var R = -2;
+var R = -4;
 var EPSILON = 0.000001;
 
 var mathUtils = {
+
     clip1: function (d) {
         return this.clip(d, 0.0, 1.0);
     },
