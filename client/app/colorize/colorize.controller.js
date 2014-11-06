@@ -4,7 +4,7 @@
 
 
 angular.module('colorayzApp')
-  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', function ($scope, usSpinnerService) {
+  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'historyService', function ($scope, usSpinnerService, historyService) {
 
         var cursorSize = 16;
         var cursorHalfSize = cursorSize / 2;
@@ -130,7 +130,7 @@ angular.module('colorayzApp')
                         isDrawing = true;
                         updateLocation(e);
                         ctx.beginPath();
-                        history.saveState(this);
+                        historyService.saveState(this);
                         ctx.fillStyle = $scope.brushColor;
                         ctx.lineJoin = ctx.lineCap = 'round';
                         ctx.lineWidth = $scope.brushWidth;
@@ -328,44 +328,12 @@ angular.module('colorayzApp')
             $scope.srcCanvas.style.cursor = 'url(' + cursor.toDataURL() + ') ' + cursorHalfSize + ' ' + cursorHalfSize + ', auto';
         }
 
-        var history = {
-            redo_list: [],
-            undo_list: [],
-            saveState: function(canvas, list, keep_redo) {
-                keep_redo = keep_redo || false;
-                if(!keep_redo) {
-                    this.redo_list = [];
-                }
-
-                (list || this.undo_list).push(canvas.toDataURL());
-            },
-            undo: function(canvas, ctx) {
-                this.restoreState(canvas, ctx, this.undo_list, this.redo_list);
-            },
-            redo: function(canvas, ctx) {
-                this.restoreState(canvas, ctx, this.redo_list, this.undo_list);
-            },
-            restoreState: function(canvas, ctx,  pop, push) {
-                if(pop.length) {
-                    this.saveState(canvas, push, true);
-                    var restore_state = pop.pop();
-                    var img = new Image();
-                    img.src = restore_state;
-
-                    img.onload = function() {
-                        ctx.clearRect(0, 0, $scope.width, $scope.height);
-                        ctx.drawImage(img, 0, 0);
-                    }
-                }
-            }
-        };
-
         $scope.undo = function() {
-            history.undo($scope.srcCanvas,  $scope.srcCanvas.getContext('2d'));
+            historyService.undo($scope.srcCanvas,  $scope.srcCanvas.getContext('2d'));
         };
 
         $scope.redo = function() {
-            history.redo($scope.srcCanvas,  $scope.srcCanvas.getContext('2d'));
+            historyService.redo($scope.srcCanvas,  $scope.srcCanvas.getContext('2d'));
         };
 
         document.onkeydown = KeyPress;
