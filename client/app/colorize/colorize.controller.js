@@ -4,10 +4,7 @@
 
 
 angular.module('colorayzApp')
-  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'historyService', function ($scope, usSpinnerService, historyService) {
-
-        var cursorSize = 16;
-        var cursorHalfSize = cursorSize / 2;
+  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'historyService', 'cursorService', function ($scope, usSpinnerService, historyService, cursorService) {
 
         $scope.samples = ['rose', 'baby', 'bird'];
 
@@ -20,7 +17,7 @@ angular.module('colorayzApp')
         };
 
         function updateCursor() {
-            makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
+            $scope.srcCanvas.style.cursor = cursorService.makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
         }
 
         function getSrcColorAt(x, y) {
@@ -225,6 +222,7 @@ angular.module('colorayzApp')
             };
             w.onerror = function (e) {
                 console.error(e);
+                $scope.stopSpin();
             };
         };
 
@@ -292,41 +290,6 @@ angular.module('colorayzApp')
             showSelectionPalette: true,
             change: $scope.colorChange
         });
-
-        function makeCursor(tool, color, width) {
-
-            if (tool === 'color_picker') {
-                $scope.srcCanvas.style.cursor = 'url(assets/images/eyedropper_16.png) 0 18, auto';
-                return;
-            }
-
-            var cursor = document.createElement('canvas'),
-                ctx = cursor.getContext('2d');
-
-            cursor.width = cursorSize;
-            cursor.height = cursorSize;
-
-            ctx.strokeStyle = color;
-
-            ctx.lineWidth = Math.min(4, width);
-            ctx.lineCap = 'round';
-
-            var radius = width / 2;
-
-            ctx.beginPath();
-            ctx.arc(cursorHalfSize, cursorHalfSize, radius, 0, 2 * Math.PI, false);
-            if (tool === 'pencil') {
-                ctx.fillStyle = color;
-                ctx.fill();
-            } else if (tool === 'eraser') {
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = 'black';
-            }
-
-            ctx.stroke();
-
-            $scope.srcCanvas.style.cursor = 'url(' + cursor.toDataURL() + ') ' + cursorHalfSize + ' ' + cursorHalfSize + ', auto';
-        }
 
         $scope.undo = function() {
             historyService.undo($scope.srcCanvas,  $scope.srcCanvas.getContext('2d'));
