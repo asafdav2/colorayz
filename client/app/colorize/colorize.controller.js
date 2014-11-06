@@ -2,9 +2,8 @@
 /* global confirm */
 'use strict';
 
-
 angular.module('colorayzApp')
-  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'historyService', 'cursorService', function ($scope, usSpinnerService, historyService, cursorService) {
+  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'canvasService', 'historyService', 'cursorService', function ($scope, usSpinnerService, canvasService, historyService, cursorService) {
 
         $scope.samples = ['rose', 'baby', 'bird'];
 
@@ -18,15 +17,6 @@ angular.module('colorayzApp')
 
         function updateCursor() {
             $scope.srcCanvas.style.cursor = cursorService.makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
-        }
-
-        function getSrcColorAt(x, y) {
-            var data = $scope.srcCanvas.getContext('2d').getImageData(0, 0, $scope.width, $scope.height).data;
-            var id = 4 * (y * $scope.width + x);
-            var r = data[id];
-            var g = data[id + 1];
-            var b = data[id + 2];
-            return [r,  g,  b];
         }
 
         function relMouseCoords(event) {
@@ -120,7 +110,7 @@ angular.module('colorayzApp')
                     return function (e) {
                         if ($scope.tool === 'color_picker') {
                             var coords = $scope.srcCanvas.relMouseCoords(e);
-                            $scope.brushColor = rgbToHex(getSrcColorAt(coords.x, coords.y));
+                            $scope.brushColor = rgbToHex(canvasService.getRgbAt($scope.srcCanvas, coords.x, coords.y));
                             $scope.$apply();
                             return;
                         }
@@ -166,6 +156,7 @@ angular.module('colorayzApp')
                 $scope.width = this.width;
                 setSize($scope.backCanvas, this.height, this.width);
                 setSize($scope.srcCanvas, this.height, this.width);
+                $scope.backCanvas.getContext('2d').drawImage(imgObj, 0, 0);
 
 //                    var bgRect = $scope.backCanvas.getBoundingClientRect();
 //                    var rowRect = $("#srcCanvasRow")[0].getBoundingClientRect();
@@ -174,21 +165,8 @@ angular.module('colorayzApp')
 //                    $scope.srcCanvas.style.left = left;
 //                    $scope.backCanvas.style.left = left;
 
-                $scope.backCanvas.getContext('2d').drawImage(imgObj, 0, 0);
-                var imgPixels = $scope.backCanvas.getContext('2d').getImageData(0, 0, $scope.width, $scope.height);
-
-                for(var y = 0; y < imgPixels.height; y++){
-                    for(var x = 0; x < imgPixels.width; x++){
-                        var i = (y * 4) * imgPixels.width + x * 4;
-                        var avg = (imgPixels.data[i] + imgPixels.data[i + 1] + imgPixels.data[i + 2]) / 3;
-                        imgPixels.data[i] = avg;
-                        imgPixels.data[i + 1] = avg;
-                        imgPixels.data[i + 2] = avg;
-                    }
-                }
-
-                $scope.backCanvas.getContext('2d').putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
-                $scope.bwData = getPixelsData($scope.backCanvas).data; // TODO
+                canvasService.toGrayScale($scope.backCanvas);
+                $scope.bwData = getPixelsData($scope.backCanvas).data;
             };
         };
 
@@ -207,7 +185,7 @@ angular.module('colorayzApp')
         }
 
         $scope.colorize = function () {
-            var colored = getMarkedPixels();
+            var colored = canvasService.getNonTransparentPixels($scope.srcCanvas);
             var w = new Worker('./app/core_script/colorayz.js');
             w.postMessage({'bw': $scope.bwData, 'colored': colored, 'n': $scope.height, 'm': $scope.width});
             $scope.startSpin();
@@ -262,24 +240,6 @@ angular.module('colorayzApp')
             $scope.srcCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
             $scope.dstCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
         };
-
-        function getMarkedPixels() {
-            var data = getPixelsData($scope.srcCanvas).data;
-            var height = $scope.height;
-            var width = $scope.width;
-            var pixels = [];
-            var i = 0;
-            for (var y = 0; y !== height; ++y) {
-                for (var x = 0; x !== width; ++x) {
-                    var alpha = data[i + 3];
-                    if (alpha > 0) {
-                        pixels.push(x, y, ((data[i] & 0xff) << 16) | ((data[i + 1] & 0xff) << 8) | (data[i + 2] & 0xff));
-                    }
-                    i = i + 4;
-                }
-            }
-            return pixels;
-        }
 
         angular.element('#colorPicker').spectrum({
             showInput: true,
