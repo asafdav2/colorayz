@@ -76,17 +76,19 @@ angular.module('colorayzApp')
         }
 
         function handleMouseDown(event) {
-            oldPt = new createjs.Point(stage.mouseX, stage.mouseY);
-            oldMidPt = oldPt;
-            if ($scope.tool === 'color_picker') {
-                var rgba = canvasService.getRgbaAt($scope.srcCanvas, stage.mouseX, stage.mouseY)
-                if (rgba[3] > 0) {
-                  $scope.brushColor = rgbToHex(rgba);
-                  $scope.$apply();
-                  return;
+            if (event.nativeEvent.button === 0 || event.nativeEvent.type === 'touchstart') {
+                oldPt = new createjs.Point(stage.mouseX, stage.mouseY);
+                oldMidPt = oldPt;
+                if ($scope.tool === 'color_picker') {
+                    var rgba = canvasService.getRgbaAt($scope.srcCanvas, stage.mouseX, stage.mouseY)
+                    if (rgba[3] > 0) {
+                        $scope.brushColor = rgbToHex(rgba);
+                        $scope.$apply();
+                        return;
+                    }
                 }
+                stage.addEventListener("stagemousemove", handleMouseMove);
             }
-            stage.addEventListener("stagemousemove" , handleMouseMove);
         }
 
         function handleMouseMove(event) {
@@ -111,7 +113,7 @@ angular.module('colorayzApp')
             var componentToHex = function(c) {
                 var hex = c.toString(16);
                 return hex.length == 1 ? "0" + hex : hex;
-            }
+            };
 
             return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
         }
@@ -135,12 +137,15 @@ angular.module('colorayzApp')
                 setSize($scope.srcCanvas, this.height, this.width);
                 getCtx($scope.backCanvas).drawImage(imgObj, 0, 0);
 
-//                    var bgRect = $scope.backCanvas.getBoundingClientRect();
-//                    var rowRect = $("#srcCanvasRow")[0].getBoundingClientRect();
-//                    var left = bgRect.left + (rowRect.width - bgRect.width) / 2;
-//                    left = left + 'px';
-//                    $scope.srcCanvas.style.left = left;
-//                    $scope.backCanvas.style.left = left;
+                var bgRect = $scope.backCanvas.getBoundingClientRect();
+                var rowRect = $("#srcCanvasRow")[0].getBoundingClientRect();
+                var left = (rowRect.width - bgRect.width) / 2;
+                left = left + 'px';
+                $scope.srcCanvas.style['margin-left'] = left;
+                $scope.backCanvas.style['margin-left'] = left;
+                $scope.dstCanvas.style['margin-left'] = left;
+                $('#spinner')[0].style.left = (bgRect.width / -2) + 'px';
+                $('#spinner')[0].style.top = (bgRect.height / -2) + 'px';
 
                 canvasService.toGrayScale($scope.backCanvas);
                 $scope.bwData = getPixelsData($scope.backCanvas).data;
@@ -209,9 +214,9 @@ angular.module('colorayzApp')
         };
 
         $scope.reset = function () {
-            $scope.backCanvas.width = $scope.backCanvas.width;
             srcCanvasCtx().clearRect(0, 0, $scope.width, $scope.height);
             $scope.dstCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
+            setSize($scope.dstCanvas, 0, 0);
         };
 
         angular.element('#colorPicker').spectrum({

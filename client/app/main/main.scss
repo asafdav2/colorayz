@@ -23,7 +23,7 @@
   display: block;
 }
 
-#explanation .col-lg-6 {
+#explanation .col-lg-6 p {
   margin-top: -35px;
 }
 
@@ -31,8 +31,10 @@
   border: 1px $gray solid;
 }
 
-#explanation .btn {
+#startButton {
+  margin: 20px;
+}
+
+#startButton .btn {
   color: $gray-darker;
-  margin-top: 35px;
-  margin-left: 75px;
 }
