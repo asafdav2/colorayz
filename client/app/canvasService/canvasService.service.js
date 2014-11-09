@@ -11,13 +11,14 @@ angular.module('colorayzApp')
             return this.getCanvasContext(canvas).getImageData(0, 0, canvas.width, canvas.height);
         };
 
-        this.getRgbAt = function (canvas, x, y) {
-            var data = this.getPixelsData(canvas);
+        this.getRgbaAt = function (canvas, x, y) {
+            var data = this.getPixelsData(canvas).data;
             var id = 4 * (y * canvas.width + x);
             var r = data[id];
             var g = data[id + 1];
             var b = data[id + 2];
-            return [r, g, b];
+            var a = data[id + 3];
+            return [r, g, b, a];
         };
 
         this.toGrayScale = function (canvas) {

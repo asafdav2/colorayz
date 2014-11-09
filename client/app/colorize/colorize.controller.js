@@ -5,48 +5,12 @@
 angular.module('colorayzApp')
   .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'canvasService', 'historyService', 'cursorService', function ($scope, usSpinnerService, canvasService, historyService, cursorService) {
 
+        var stage;
+        var drawingCanvas;
+        var oldMidPt;
+        var oldPt;
+
         $scope.samples = ['rose', 'baby', 'bird'];
-
-        $scope.startSpin = function () {
-            usSpinnerService.spin('colorization-spinner');
-        };
-
-        $scope.stopSpin = function () {
-            usSpinnerService.stop('colorization-spinner');
-        };
-
-        function updateCursor() {
-            $scope.srcCanvas.style.cursor = cursorService.makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
-        }
-
-        function relMouseCoords(event) {
-            var totalOffsetX = 0;
-            var totalOffsetY = 0;
-            var currentElement = event.target;
-
-            do {
-                totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
-                totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
-                currentElement = currentElement.offsetParent;
-            }
-            while (currentElement);
-
-            return {
-                x: event.pageX - totalOffsetX,
-                y: event.pageY - totalOffsetY
-            };
-        }
-
-        function componentToHex(c) {
-            var hex = c.toString(16);
-            return hex.length == 1 ? "0" + hex : hex;
-        }
-
-        function rgbToHex(rgb) {
-            return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
-        }
-
-        HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
 
         $scope.brushWidthOptions = {
             min: 1,
@@ -66,83 +30,96 @@ angular.module('colorayzApp')
         $scope.tool = 'pencil';
         $scope.brushColor = '#CC0A0A';
         $scope.brushWidth = 3;
-        updateCursor();
 
-        function getCanvasContext(canvas) {
+        updateCursor();
+        init();
+
+        function getCtx(canvas) {
             return canvas.getContext('2d');
         }
 
+        function srcCanvasCtx() {
+            return getCtx($scope.srcCanvas);
+        }
+
         function getPixelsData(canvas) {
-            return getCanvasContext(canvas).getImageData(0, 0, canvas.width, canvas.height);
+            return getCtx(canvas).getImageData(0, 0, canvas.width, canvas.height);
         }
 
-        var el = $scope.srcCanvas;
-        var ctx = el.getContext('2d');
-
-        var isDrawing = false,
-            prevX = 0,
-            currX = 0,
-            prevY = 0,
-            currY = 0;
-
-        function draw() {
-            ctx.beginPath();
-            ctx.moveTo(prevX, prevY);
-            ctx.lineTo(currX, currY);
-
-            ctx.strokeStyle = $scope.brushColor;
-            ctx.lineWidth = $scope.brushWidth;
-            ctx.stroke();
-            ctx.closePath();
+        function updateCursor() {
+            $scope.srcCanvas.style.cursor = cursorService.makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
         }
 
-        function updateLocation(e) {
-            var coords = $scope.srcCanvas.relMouseCoords(e);
-            prevX = currX;
-            prevY = currY;
-            currX = coords.x;
-            currY = coords.y;
+        function init() {
+          stage = new createjs.Stage($scope.srcCanvas);
+          stage.autoClear = false;
+          stage.enableDOMEvents(true);
+
+          createjs.Touch.enable(stage);
+          createjs.Ticker.setFPS(60);
+
+          drawingCanvas = new createjs.Shape();
+
+          stage.addEventListener("stagemousedown", handleMouseDown);
+          stage.addEventListener("stagemouseup", handleMouseUp);
+
+          stage.addChild(drawingCanvas);
+          stage.update();
+
+          document.onkeydown = KeyPress;
         }
 
-        function findxy(res) {
-            switch (res) {
-                case 'down':
-                    return function (e) {
-                        if ($scope.tool === 'color_picker') {
-                            var coords = $scope.srcCanvas.relMouseCoords(e);
-                            $scope.brushColor = rgbToHex(canvasService.getRgbAt($scope.srcCanvas, coords.x, coords.y));
-                            $scope.$apply();
-                            return;
-                        }
-                        isDrawing = true;
-                        updateLocation(e);
-                        ctx.beginPath();
-                        historyService.saveState(this);
-                        ctx.fillStyle = $scope.brushColor;
-                        ctx.lineJoin = ctx.lineCap = 'round';
-                        ctx.lineWidth = $scope.brushWidth;
-                        ctx.fillRect(currX, currY, 2, 2);
-                        ctx.closePath();
-                    };
-                case 'up':
-                case 'out':
-                    return function () {
-                        isDrawing = false;
-                    };
-                case 'move':
-                    return function (e) {
-                        if (isDrawing) {
-                            updateLocation(e);
-                            draw();
-                        }
-                    };
+        function KeyPress(e) {
+            var evtobj = window.event? event : e;
+            if (evtobj.keyCode == 90 && evtobj.ctrlKey) $scope.undo();
+            if (evtobj.keyCode == 89 && evtobj.ctrlKey) $scope.redo();
+        }
+
+        function handleMouseDown(event) {
+            oldPt = new createjs.Point(stage.mouseX, stage.mouseY);
+            oldMidPt = oldPt;
+            if ($scope.tool === 'color_picker') {
+                var rgba = canvasService.getRgbaAt($scope.srcCanvas, stage.mouseX, stage.mouseY)
+                if (rgba[3] > 0) {
+                  $scope.brushColor = rgbToHex(rgba);
+                  $scope.$apply();
+                  return;
+                }
             }
+            stage.addEventListener("stagemousemove" , handleMouseMove);
         }
 
-        el.addEventListener('mousemove', findxy('move'), false);
-        el.addEventListener('mousedown', findxy('down'), false);
-        el.addEventListener('mouseup', findxy('up'), false);
-        el.addEventListener('mouseout', findxy('out'), false);
+        function handleMouseMove(event) {
+            var midPt = new createjs.Point(oldPt.x + stage.mouseX >> 1, oldPt.y + stage.mouseY >> 1);
+
+            drawingCanvas.graphics.clear().setStrokeStyle($scope.brushWidth, 'round', 'round').beginStroke($scope.brushColor).moveTo(midPt.x, midPt.y).curveTo(oldPt.x, oldPt.y, oldMidPt.x, oldMidPt.y);
+
+            oldPt.x = stage.mouseX;
+            oldPt.y = stage.mouseY;
+
+            oldMidPt.x = midPt.x;
+            oldMidPt.y = midPt.y;
+
+            stage.update();
+        }
+
+        function handleMouseUp(event) {
+            stage.removeEventListener("stagemousemove" , handleMouseMove);
+        }
+
+        function rgbToHex(rgb) {
+            var componentToHex = function(c) {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            }
+
+            return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
+        }
+
+        function setSize(canvas, height, width) {
+            canvas.height = height;
+            canvas.width = width;
+        }
 
         $scope.load = function (image) {
 
@@ -156,7 +133,7 @@ angular.module('colorayzApp')
                 $scope.width = this.width;
                 setSize($scope.backCanvas, this.height, this.width);
                 setSize($scope.srcCanvas, this.height, this.width);
-                $scope.backCanvas.getContext('2d').drawImage(imgObj, 0, 0);
+                getCtx($scope.backCanvas).drawImage(imgObj, 0, 0);
 
 //                    var bgRect = $scope.backCanvas.getBoundingClientRect();
 //                    var rowRect = $("#srcCanvasRow")[0].getBoundingClientRect();
@@ -179,11 +156,6 @@ angular.module('colorayzApp')
             reader.readAsDataURL(element.files[0]);
         };
 
-        function setSize(canvas, height, width) {
-            canvas.height = height;
-            canvas.width = width;
-        }
-
         $scope.colorize = function () {
             var colored = canvasService.getNonTransparentPixels($scope.srcCanvas);
             var w = new Worker('./app/core_script/colorayz.js');
@@ -195,7 +167,7 @@ angular.module('colorayzApp')
                 for (var i = 0; i !== e.data.length; i++) {
                     dstData.data[i] = e.data[i];
                 }
-                getCanvasContext($scope.dstCanvas).putImageData(dstData, 0, 0);
+                getCtx($scope.dstCanvas).putImageData(dstData, 0, 0);
                 $scope.stopSpin();
             };
             w.onerror = function (e) {
@@ -215,6 +187,7 @@ angular.module('colorayzApp')
                 return;
             }
             $scope.tool = tool;
+            var ctx = srcCanvasCtx();
             switch (tool) {
                 case 'pencil':
                     ctx.globalCompositeOperation = $scope.prevGlobalCompositeOperation;
@@ -231,13 +204,13 @@ angular.module('colorayzApp')
 
         $scope.clear = function () {
             if (confirm('Are you sure you want to clear all markings?')) {
-                $scope.srcCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
+                srcCanvasCtx().clearRect(0, 0, $scope.width, $scope.height);
             }
         };
 
         $scope.reset = function () {
             $scope.backCanvas.width = $scope.backCanvas.width;
-            $scope.srcCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
+            srcCanvasCtx().clearRect(0, 0, $scope.width, $scope.height);
             $scope.dstCanvas.getContext('2d').clearRect(0, 0, $scope.width, $scope.height);
         };
 
@@ -252,18 +225,18 @@ angular.module('colorayzApp')
         });
 
         $scope.undo = function() {
-            historyService.undo($scope.srcCanvas,  $scope.srcCanvas.getContext('2d'));
+            historyService.undo($scope.srcCanvas,  srcCanvasCtx());
         };
 
         $scope.redo = function() {
-            historyService.redo($scope.srcCanvas,  $scope.srcCanvas.getContext('2d'));
+            historyService.redo($scope.srcCanvas,  srcCanvasCtx());
         };
 
-        document.onkeydown = KeyPress;
+        $scope.startSpin = function () {
+            usSpinnerService.spin('colorization-spinner');
+        };
 
-        function KeyPress(e) {
-            var evtobj = window.event? event : e;
-            if (evtobj.keyCode == 90 && evtobj.ctrlKey) $scope.undo();
-            if (evtobj.keyCode == 89 && evtobj.ctrlKey) $scope.redo();
-        }
+        $scope.stopSpin = function () {
+            usSpinnerService.stop('colorization-spinner');
+        };
   }]);

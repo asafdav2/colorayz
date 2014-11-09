@@ -19,7 +19,8 @@
     "angular-spectrum-colorpicker": "~1.2.0",
     "seiyria-bootstrap-slider": "*",
     "angular-bootstrap-slider": "*",
-    "angular-spinner": "*"
+    "angular-spinner": "*",
+    "easeljs": "*"
   },
   "devDependencies": {
     "angular-mocks": ">=1.2.*",
