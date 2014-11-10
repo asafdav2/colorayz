@@ -24,12 +24,12 @@
             </div>
             <button type="button" class="btn btn-default" id="colorPicker" title="Choose brush color"><i
                     class="fa fa-circle"
-                    ng-style="{color: brushColor}"></i><span class="hidden-xs"> Color</span>
+                    ng-style="{color: brushColor}"></i> <span class="hidden-xs">Color</span>
             </button>
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                         title="Choose tool">
-                    <i class="fa fa-paint-brush"></i><span class="hidden-xs"> Tool <span class="caret"></span></span>
+                    <i class="fa fa-paint-brush"></i> <span class="hidden-xs">Tool <span class="caret"></span></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li ng-class="{active: tool === 'pencil'}"><a ng-click="selectTool('pencil')" title="Pencil"><i
@@ -58,7 +58,7 @@
             <button type="button" class="btn btn-default" ng-click="redo()" title="Redo"><i class="fa fa-share"></i>
             </button>
             <button type="button" class="btn btn-default" ng-click="clear()" title="Clear all scribbles"><i
-                    class="fa fa-trash-o"></i><span class="hidden-xs"> Clear</span></button>
+                    class="fa fa-trash-o"></i> <span class="hidden-xs">Clear</span></button>
             <button type="button" class="btn btn-primary" ng-click="colorize()" title="Colorize"><img src="favicon.png"
                                                                                                       height="16"
                                                                                                       width="16"></i>
