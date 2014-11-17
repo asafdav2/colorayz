@@ -32,10 +32,6 @@
   z-index: 1;
 }
 
-.sp-cancel {
-  text-shadow: none;
-}
-
 p .fa {
   text-shadow: none;
 }
@@ -54,4 +50,27 @@ p .fa {
   clear: both;
   font-weight: normal;
   line-height: 1.42857;
+}
+
+.spectrumContainer {
+  background: $dropdown-bg;
+  border: solid 1px $gray-light;
+}
+
+.spectrumContainer .sp-input {
+  color: $text-color;
+}
+
+.spectrumContainer .sp-cancel {
+  text-shadow: none;
+  color: $text-color !important;
+}
+
+.spectrumContainer .sp-picker-container {
+  border-left: solid 1px $gray-light;
+}
+
+.spectrumContainer .sp-palette-container {
+  #border-right: solid 1px $gray-light;
+  border-right: none;
 }

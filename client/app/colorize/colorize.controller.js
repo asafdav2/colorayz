@@ -226,7 +226,8 @@ angular.module('colorayzApp')
             showPalette: true,
             palette: [ ],
             showSelectionPalette: true,
-            change: $scope.colorChange
+            change: $scope.colorChange,
+            containerClassName: 'spectrumContainer'
         });
 
         $scope.undo = function() {
