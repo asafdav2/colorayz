@@ -169,8 +169,9 @@ angular.module('colorayzApp')
             w.onmessage = function (e) {
                 setSize($scope.dstCanvas, $scope.height, $scope.width);
                 var dstData = getPixelsData($scope.dstCanvas);
-                for (var i = 0; i !== e.data.length; i++) {
-                    dstData.data[i] = e.data[i];
+                var data = new Uint32Array(e.data);
+                for (var i = 0; i !== data.length; i++) {
+                    dstData.data[i] = data[i];
                 }
                 getCtx($scope.dstCanvas).putImageData(dstData, 0, 0);
                 $scope.stopSpin();

@@ -179,8 +179,8 @@ function blend(p, q, d, modifiedPixels, pixels) {
                     q.d[j] = p.d[i] + d;
                     modified = true;
                 }
-            } else {
-                break;
+//            } else {
+//                break;
             }
         }
     }
@@ -193,8 +193,10 @@ function blend(p, q, d, modifiedPixels, pixels) {
 }
 
 var algorithm = {
-    propagate: function (activeSet, pixels, n, m, Y) {
+    propagate: function (activeSet, pixels, n, m, Y, updateCallback) {
         var addToActiveSet = {};
+        var ITERATIONS_TILL_UPDATE = 50000;
+        var iterationsTillUpdate = ITERATIONS_TILL_UPDATE;
         while (!_.isEmpty(activeSet)) {
             for (var coord in activeSet) {
                 if (activeSet.hasOwnProperty(coord)) {
@@ -205,10 +207,12 @@ var algorithm = {
                             if (y !== p.y || x !== p.x) {
                                 var q = pixels[x][y];
                                 var qy = Y[x][y];
-                                if (qy < 1.0) {
-                                    var py = Y[p.x][p.y];
-                                    var d = Math.abs(py - qy);
-                                    blend(p, q, d, addToActiveSet, pixels);
+                                var py = Y[p.x][p.y];
+                                var d = Math.abs(py - qy);
+                                blend(p, q, d, addToActiveSet, pixels);
+                                if (--iterationsTillUpdate == 0) {
+                                    iterationsTillUpdate = ITERATIONS_TILL_UPDATE;
+                                    updateCallback(pixels, n, m, Y);
                                 }
                             }
                         }
@@ -251,7 +255,7 @@ var asColoredMap = function (colored) {
 };
 
 var writeToLinearArray = function (pixels, n, m, Y) {
-    var data = createArray(n * m * 4);
+    var data = new Uint32Array(n * m * 4);
     for (var y = 0; y !== n; y++) {
         var ym = y * m;
         for (var x = 0; x !== m; x++) {
@@ -267,7 +271,7 @@ var writeToLinearArray = function (pixels, n, m, Y) {
     return data;
 };
 
-function run(bw, colored, n, m) {
+function run(bw, colored, n, m, updateCallback) {
     var Y = createArray(m, n);
     var pixels = createArray(m, n);
     var activeSet = {};
@@ -287,11 +291,15 @@ function run(bw, colored, n, m) {
         }
     }
 
-    return writeToLinearArray(algorithm.propagate(activeSet, pixels, n, m, Y), n, m, Y);
+    return writeToLinearArray(algorithm.propagate(activeSet, pixels, n, m, Y, updateCallback), n, m, Y);
 }
 
 var onmessage = function (e) {
-    var result = run(e.data.bw, e.data.colored, e.data.n, e.data.m);
+    var result = run(e.data.bw, e.data.colored, e.data.n, e.data.m, function(pixels, n, m, Y) {
+        var data = writeToLinearArray(pixels, n, m, Y);
+        postMessage(data.buffer,  [data.buffer]);
+        //postMessage(writeToLinearArray(pixels,  n,  m,  Y));
+    });
     postMessage(result);
 };
 
