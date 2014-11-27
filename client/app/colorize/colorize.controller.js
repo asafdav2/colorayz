@@ -87,6 +87,7 @@ angular.module('colorayzApp')
                         return;
                     }
                 }
+                historyService.saveState($scope.srcCanvas);
                 stage.addEventListener("stagemousemove", handleMouseMove);
             }
         }
