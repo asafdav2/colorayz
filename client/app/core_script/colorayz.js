@@ -12,7 +12,7 @@ if (typeof importScripts !== 'undefined') {
 
 var MAX_DISTANCE = 65535;
 var MAX_BLEND_COLORS = 3;
-var R = -4;
+var R = -9;
 var EPSILON = 0.000001;
 
 var mathUtils = {
@@ -179,8 +179,8 @@ function blend(p, q, d, modifiedPixels, pixels) {
                     q.d[j] = p.d[i] + d;
                     modified = true;
                 }
-//            } else {
-//                break;
+            } else {
+                break;
             }
         }
     }
@@ -265,7 +265,7 @@ var writeToLinearArray = function (pixels, n, m, Y) {
             data[id  ] = rgb[0];
             data[id + 1] = rgb[1];
             data[id + 2] = rgb[2];
-            data[id + 3] = 255;
+            data[id + 3] = pixels[x][y].alpha;
         }
     }
     return data;
@@ -284,9 +284,11 @@ function run(bw, colored, n, m, updateCallback) {
             var coord = new Coordinates(x, y);
             if (coord in colored) {
                 pixels[x][y] = new Pixel(coord, new Chrominance(colored[coord]));
+                pixels[x][y].alpha = bw[id+3];
                 activeSet[coord] = coord;
             } else {
                 pixels[x][y] = new Pixel(x, y);
+                pixels[x][y].alpha = bw[id+3];
             }
         }
     }
@@ -300,7 +302,7 @@ var onmessage = function (e) {
         postMessage(data.buffer,  [data.buffer]);
         //postMessage(writeToLinearArray(pixels,  n,  m,  Y));
     });
-    postMessage(result);
+    postMessage(result); // TODO: should return this as transferable as well
 };
 
 
