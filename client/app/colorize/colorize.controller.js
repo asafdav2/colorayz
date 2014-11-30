@@ -10,7 +10,7 @@ angular.module('colorayzApp')
         var oldMidPt;
         var oldPt;
 
-        $scope.samples = ['rose', 'baby', 'garfield'];
+        $scope.samples = ['rose', 'peppers', 'garfield'];
 
         $scope.brushWidthOptions = {
             min: 1,
