@@ -132,6 +132,8 @@ angular.module('colorayzApp')
 
             imgObj.onload = function () {
 
+                $("#noImageWarn").hide();
+
                 $scope.height = this.height;
                 $scope.width = this.width;
                 setSize($scope.backCanvas, this.height, this.width);
