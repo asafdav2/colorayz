@@ -364,6 +364,7 @@ module.exports = function (grunt) {
             '.htaccess',
             'bower_components/**/*',
             'app/core_script/colorayz.js',
+            'vendor/*',
             'assets/images/{,*/}*.{webp}',
             'assets/fonts/**/*',
             'index.html'

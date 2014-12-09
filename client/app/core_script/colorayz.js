@@ -297,11 +297,16 @@ function run(bw, colored, n, m, updateCallback) {
 }
 
 var onmessage = function (e) {
-    var result = run(e.data.bw, e.data.colored, e.data.n, e.data.m, function(pixels, n, m, Y) {
+
+    var progressUpdate = function(pixels, n, m, Y) {
         var data = writeToLinearArray(pixels, n, m, Y);
         postMessage(data.buffer,  [data.buffer]);
         //postMessage(writeToLinearArray(pixels,  n,  m,  Y));
-    });
+    };
+    if (!e.data.options.animateProgress) {
+        progressUpdate = function(pixels, n, m, Y) {}
+    }
+    var result = run(e.data.bw, e.data.colored, e.data.n, e.data.m, progressUpdate);
     postMessage(result); // TODO: should return this as transferable as well
 };
 

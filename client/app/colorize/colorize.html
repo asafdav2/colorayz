@@ -46,7 +46,7 @@
                         title="Set brush width">
                     <i class="fa fa-arrows-h"></i> <span class="hidden-xs"> Width <span class="caret"></span></span>
                 </button>
-                <ul class="dropdown-menu" role="menu">
+                <ul class="dropdown-menu noclose" role="menu">
                     <li id="sliderItem">
                         <slider ng-model="brushWidth" min="{{brushWidthOptions.min}}" step="{{brushWidthOptions.step}}"
                                 max="{{brushWidthOptions.max}}" value="{{brushWidthOptions.value}}"/>
@@ -59,11 +59,16 @@
             </button>
             <button type="button" class="btn btn-default" ng-click="clear()" title="Clear all scribbles"><i
                     class="fa fa-trash-o"></i> <span class="hidden-xs">Clear</span></button>
-            <button type="button" class="btn btn-primary" ng-click="colorize()" title="Colorize"><img src="favicon.png"
-                                                                                                      height="16"
-                                                                                                      width="16"></i>
-                 Colorize
-            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-placeholder="false"
+                        title="Options">
+                    <i class="fa fa-gear "></i> Options <span
+                        class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><input type="checkbox" id="animateProgress" name="animateProgress" ng-model="animateProgress"/><label id="animateProgressLabel" for="animateProgress">Animate progress</label></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
@@ -75,8 +80,11 @@
     <span id="spinner" us-spinner="{radius:30, width:8, length: 16}" spinner-key="colorization-spinner"></span>
 </div>
 
-<p id="noImageWarn" class="text-center">No image was selected yet, please start by either clicking on <button type="button" class="btn btn-default btn-disabled" disabled="disabled"><i class="fa fa-folder-open"></i> Load</button> to load an image from your computer or on <button type="button" class="btn btn-default" disabled="disabled"><i class="fa fa-picture-o "></i> From samples <span class="caret"></span></button> to start with a sample image.</p>
+<p ng-show="noImageSelectedYet" id="noImageWarn" class="text-center">No image was selected yet, please start by either clicking on <button type="button" class="btn btn-default btn-disabled" disabled="disabled"><i class="fa fa-folder-open"></i> Load</button> to load an image from your computer or on <button type="button" class="btn btn-default" disabled="disabled"><i class="fa fa-picture-o "></i> From samples <span class="caret"></span></button> to start with a sample image.</p>
 
+<div ng-show="!noImageSelectedYet" class="text-center">
+    <button class="btn btn-primary" ng-click="colorize()" title="Colorize" id="colorizeBtn"><img src="favicon.png" height="16" width="16"> Colorize</button>
+</div>
 <div class="row">
     <canvas id="dstCanvas" width="0" height="0"/>
 </div>

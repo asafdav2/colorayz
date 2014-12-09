@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('colorayzApp')
-  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'canvasService', 'historyService', 'cursorService', function ($scope, usSpinnerService, canvasService, historyService, cursorService) {
+  .controller('ColorizeCtrl', ['$scope', 'usSpinnerService', 'canvasService', 'historyService', 'cursorService', 'storage', function ($scope, usSpinnerService, canvasService, historyService, cursorService, storage) {
 
         var stage;
         var drawingCanvas;
@@ -11,6 +11,10 @@ angular.module('colorayzApp')
         var oldPt;
 
         $scope.samples = ['rose', 'peppers', 'garfield'];
+
+        storage.bind($scope, 'animateProgress', {defaultValue: true});
+
+        $scope.noImageSelectedYet = true;
 
         $scope.brushWidthOptions = {
             min: 1,
@@ -132,7 +136,7 @@ angular.module('colorayzApp')
 
             imgObj.onload = function () {
 
-                $("#noImageWarn").hide();
+                $scope.noImageSelectedYet = false;
 
                 $scope.height = this.height;
                 $scope.width = this.width;
@@ -152,13 +156,14 @@ angular.module('colorayzApp')
 
                 canvasService.toGrayScale($scope.backCanvas);
                 $scope.bwData = getPixelsData($scope.backCanvas).data;
+                $scope.$apply();
             };
         };
 
         $scope.fileChanged = function (element) {
 
             var reader = new FileReader();
-            reader.onload = function () {
+            reader.onload = function (event) {
                 $scope.load(event.target.result);
             };
             reader.readAsDataURL(element.files[0]);
@@ -167,7 +172,7 @@ angular.module('colorayzApp')
         $scope.colorize = function () {
             var colored = canvasService.getNonTransparentPixels($scope.srcCanvas);
             var w = new Worker('./app/core_script/colorayz.js');
-            w.postMessage({'bw': $scope.bwData, 'colored': colored, 'n': $scope.height, 'm': $scope.width});
+            w.postMessage({'bw': $scope.bwData, 'colored': colored, 'n': $scope.height, 'm': $scope.width, 'options' : {'animateProgress': $scope.animateProgress}});
             $scope.startSpin();
             w.onmessage = function (e) {
                 setSize($scope.dstCanvas, $scope.height, $scope.width);
