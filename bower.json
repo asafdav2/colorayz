@@ -2,23 +2,23 @@
   "name": "colorayz",
   "version": "0.0.0",
   "dependencies": {
-    "angular": ">=1.2.*",
+    "angular": "1.4.3",
     "json3": "~3.3.1",
     "es5-shim": "~3.0.1",
-    "jquery": "~1.11.0",
-    "bootstrap-sass-official": "~3.1.1",
-    "bootstrap": "~3.1.1",
-    "angular-resource": ">=1.2.*",
-    "angular-cookies": ">=1.2.*",
-    "angular-sanitize": ">=1.2.*",
-    "angular-bootstrap": "~0.11.0",
-    "font-awesome": ">=4.1.0",
-    "lodash": "~2.4.1",
-    "angular-ui-router": "~0.2.10",
-    "spectrum": "~1.5.0",
-    "angular-spectrum-colorpicker": "~1.2.0",
-    "seiyria-bootstrap-slider": "*",
-    "angular-bootstrap-slider": "*",
+    "jquery": "~1.11.3",
+    "bootstrap-sass-official": "~3.3.5",
+    "bootstrap": "~3.3.5",
+    "angular-resource": "1.4.3",
+    "angular-cookies": "1.4.3",
+    "angular-sanitize": "1.4.3",
+    "angular-bootstrap": "~0.13.1",
+    "font-awesome": ">=4.4.0",
+    "lodash": "~3.10.0",
+    "angular-ui-router": "~0.2.15",
+    "spectrum": "~1.7.0",
+    "angular-spectrum-colorpicker": "~1.4.1",
+    "seiyria-bootstrap-slider": "4.13.1",
+    "angular-bootstrap-slider": "0.1.6",
     "angular-spinner": "*",
     "easeljs": "*",
     "angularLocalStorage": "*"
@@ -28,6 +28,9 @@
     "angular-scenario": ">=1.2.*"
   },
   "resolutions": {
-    "angular": "1.3.1"
+    "angular": "1.4.3",
+    "spectrum": "1.7.0",
+    "angular-cookies": "1.4.3",
+    "seiyria-bootstrap-slider": "~v4.8"
   }
 }

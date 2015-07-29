@@ -16,13 +16,6 @@ angular.module('colorayzApp')
 
         $scope.noImageSelectedYet = true;
 
-        $scope.brushWidthOptions = {
-            min: 1,
-            max: 10,
-            step: 1,
-            tooltip: 'always'
-        };
-
         $scope.$watch('brushWidth', function() {
             updateCursor();
         });
@@ -51,7 +44,8 @@ angular.module('colorayzApp')
         }
 
         function updateCursor() {
-            $scope.srcCanvas.style.cursor = cursorService.makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
+          var newCursor = cursorService.makeCursor($scope.tool, $scope.brushColor, $scope.brushWidth);
+          $scope.srcCanvas.style.cursor = newCursor;
         }
 
         function init() {
@@ -84,7 +78,7 @@ angular.module('colorayzApp')
                 oldPt = new createjs.Point(stage.mouseX, stage.mouseY);
                 oldMidPt = oldPt;
                 if ($scope.tool === 'color_picker') {
-                    var rgba = canvasService.getRgbaAt($scope.srcCanvas, stage.mouseX, stage.mouseY)
+                    var rgba = canvasService.getRgbaAt($scope.srcCanvas, stage.mouseX, stage.mouseY);
                     if (rgba[3] > 0) {
                         $scope.brushColor = rgbToHex(rgba);
                         $scope.$apply();
@@ -96,7 +90,7 @@ angular.module('colorayzApp')
             }
         }
 
-        function handleMouseMove(event) {
+        function handleMouseMove() {
             var midPt = new createjs.Point(oldPt.x + stage.mouseX >> 1, oldPt.y + stage.mouseY >> 1);
 
             drawingCanvas.graphics.clear().setStrokeStyle($scope.brushWidth, 'round', 'round').beginStroke($scope.brushColor).moveTo(midPt.x, midPt.y).curveTo(oldPt.x, oldPt.y, oldMidPt.x, oldMidPt.y);
@@ -110,7 +104,7 @@ angular.module('colorayzApp')
             stage.update();
         }
 
-        function handleMouseUp(event) {
+        function handleMouseUp() {
             stage.removeEventListener("stagemousemove" , handleMouseMove);
         }
 
@@ -172,7 +166,8 @@ angular.module('colorayzApp')
         $scope.colorize = function () {
             var colored = canvasService.getNonTransparentPixels($scope.srcCanvas);
             var w = new Worker('./app/core_script/colorayz.js');
-            w.postMessage({'bw': $scope.bwData, 'colored': colored, 'n': $scope.height, 'm': $scope.width, 'options' : {'animateProgress': $scope.animateProgress}});
+            var params = {'bw': $scope.bwData, 'colored': colored, 'n': $scope.height, 'm': $scope.width, 'options' : {'animateProgress': $scope.animateProgress}};
+            w.postMessage(params);
             $scope.startSpin();
             w.onmessage = function (e) {
                 setSize($scope.dstCanvas, $scope.height, $scope.width);

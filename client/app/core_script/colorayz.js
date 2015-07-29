@@ -7,7 +7,7 @@
  */
 
 if (typeof importScripts !== 'undefined') {
-    importScripts('../../bower_components/lodash/dist/lodash.min.js');
+    importScripts('../../bower_components/lodash/lodash.min.js');
 }
 
 var MAX_DISTANCE = 65535;
@@ -296,7 +296,7 @@ function run(bw, colored, n, m, updateCallback) {
     return writeToLinearArray(algorithm.propagate(activeSet, pixels, n, m, Y, updateCallback), n, m, Y);
 }
 
-var onmessage = function (e) {
+self.addEventListener('message', function (e) {
 
     var progressUpdate = function(pixels, n, m, Y) {
         var data = writeToLinearArray(pixels, n, m, Y);
@@ -308,7 +308,7 @@ var onmessage = function (e) {
     }
     var result = run(e.data.bw, e.data.colored, e.data.n, e.data.m, progressUpdate);
     postMessage(result); // TODO: should return this as transferable as well
-};
+}, false);
 
 
 
